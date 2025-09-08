@@ -1,0 +1,8 @@
+/* Empty file - globals.css */
+
+.container{
+    display: fle;
+    flex-direction: column;
+    max-width: 1200px;
+    background-color: white;
+}
