@@ -1,5 +1,7 @@
 import axios from "axios";
+import { error } from "console";
 import os from "os";
+import { json } from "stream/consumers";
 
 function getLocalIp() {
   const interfaces = os.networkInterfaces();
@@ -149,6 +151,82 @@ export const getBusSeatLayout= async (req,res)=>{
     });
   }
 
+}
+
+export const getBusBoardingPoint = async(req, res) =>{
+
+  const { EndUserIp,ResultIndex,TraceId,TokenId}=req.body
+
+      if (!EndUserIp || !ResultIndex || !TraceId || !TokenId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const Data={
+  EndUserIp,
+  ResultIndex,
+  TraceId,
+  TokenId,
+  }
+
+  try {
+    const response = await axios.post("https://BusBE.tektravels.com/Busservice.svc/rest/GetBoardingPointDetails",
+      Data,
+      {
+        headers:{"Content-type": "application/json"}
+      }
+    )
+     console.log("Bus BoardingPoint API is working");
+     console.log(response.data.GetBusRouteDetailResult);
+    res.json({
+      message:"Bus Boardingpoint API is working",
+      data:response.data.GetBusRouteDetailResult
+    })
+    
+  } catch (error) {
+    res.status(500).json({
+      error: "Bus BoardingPoint failed",
+      details:error.response?.data  || error.message
+    })
+    
+  }
+
+}
+
+export const busBlock=async(req, res)=>{
+
+    const { EndUserIp,ResultIndex,TraceId,TokenId}=req.body
+
+    if (!EndUserIp || !ResultIndex || !TraceId || !TokenId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const Data={
+    EndUserIp,
+    ResultIndex,
+    TraceId,
+    TokenId
+  }
+  
+
+try{
+  const response= await axios("https://BusBE.tektravels.com/Busservice.svc/rest/Block",Data,
+    {
+  headers:{"Content-type": "application/json"}
+      }
+    )
+     console.log("Bus Block API is working");
+     console.log(response.data);
+    res.json({
+      message:"Bus Block API is working",
+      data:response.data
+    })
+    
+  } catch (error) {
+    res.status(500).json({
+      error: "Bus Block API failed",
+      details:error.response?.data  || error.message
+    })
+  }
 }
 
 
