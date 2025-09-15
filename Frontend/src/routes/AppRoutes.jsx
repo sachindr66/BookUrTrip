@@ -11,6 +11,8 @@ const BusHomePage = lazy(() => import("../features/buses/pages/BusHomePage"));
 const BusResultPage = lazy(() => import("../features/buses/pages/BusResultPage"));
 const BusResultsPage = lazy(() => import("../features/buses/pages/BusResultsPage"));
 const BusSeatLayoutPage = lazy(() => import("../features/buses/pages/BusSeatLayoutPage"));
+const BusBoardingPoint = lazy(() => import("../features/buses/pages/BusBoardingPoint"));
+const BusFormDetailsPage = lazy(() => import("../features/buses/pages/BusFormDetailsPage"));
 
 
 // Loading component
@@ -42,6 +44,9 @@ const AppRoutes = () => {
           <Route path="/buseResults" element={<BusResultPage />} />
           <Route path="/buseResults1" element={<BusResultsPage />} />
           <Route path="/busSeatLayoutPage" element={<BusSeatLayoutPage />} />
+          <Route path="/busBoardingPoint" element={<BusBoardingPoint />} />
+          <Route path="/busFormDetailsPage" element={<BusFormDetailsPage />} />
+
           
           
       </Routes>

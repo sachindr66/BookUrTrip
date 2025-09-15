@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, asyncThunkCreator } from "@reduxjs/toolkit";
 import axios from "axios";
 import { reject } from "lodash";
 import { act } from "react";
@@ -74,6 +74,31 @@ export const busSeatLayout=createAsyncThunk(
   }
 )
 
+export const busBoardingPoint=createAsyncThunk(
+  "buses/busBoardingPoint",
+
+  async({EndUserIp,ResultIndex,TraceId,TokenId},{rejectWithValue})=>{
+
+    try {
+      const response= await axios.post(`${import.meta.env.VITE_API_URL}/busBoardingPoint`,{
+        EndUserIp,
+        ResultIndex,
+        TraceId,
+        TokenId,
+    })
+     console.log("Raw API BoardingPointsDetails response:", response.data);
+     return response.data.BoardingPointsDetails || response.data
+      
+    } catch (error) {
+      
+      return rejectWithValue(error.response?.data?.error ||  "Fetching BoardingPointsDetails Failed")
+      
+    }
+
+  }
+)
+
+
 // Helper functions for localStorage with data expiration
 const saveToLocalStorage = (key, data, expirationHours = 24) => {
   try {
@@ -147,6 +172,8 @@ const clearExpiredData = () => {
   }
 };
 
+
+
 const busesSlice = createSlice({
   name: "buses",
   initialState: {
@@ -155,6 +182,8 @@ const busesSlice = createSlice({
     searchResults: loadFromLocalStorage('busSearchResults', []),
     traceId:null,
     SeatLayoutResults:[],
+    BoardingPointsDetails:[],
+    DropingPointsDetails:[],
     status: "idle",
     error: null,
   },
@@ -231,6 +260,7 @@ const busesSlice = createSlice({
 
      .addCase(busSeatLayout.pending, (state, action)=>{
       state.status= "loading"
+      state.error = null;
      })
 
       .addCase(busSeatLayout.fulfilled,(state,action)=>{
@@ -245,6 +275,26 @@ const busesSlice = createSlice({
         state.status="failed",
         state.error=action.payload
       })
+
+      //Bus BoardingPointsDetails
+
+      .addCase(busBoardingPoint.pending,(state)=>{
+        state.status="loading"
+        state.error = null;
+      })
+      .addCase(busBoardingPoint.fulfilled,(state,action)=>{
+        state.status="succeeded"
+        const busBoardingPoint=action.payload?.data?.BoardingPointsDetails || []
+        const busDropingPoint=action.payload?.data?.DroppingPointsDetails || []
+        state.BoardingPointsDetails=busBoardingPoint
+        state.DropingPointsDetails=busDropingPoint
+        console.log("redux debubug", busDropingPoint)
+      })
+      .addCase(busBoardingPoint.rejected,(state,action)=>{
+        state.status="failed"
+        state.error=action.payload
+      })
+
   },
 });
 

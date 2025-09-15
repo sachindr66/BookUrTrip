@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { 
   FaArrowLeft, 
   FaStar, 
@@ -13,7 +13,6 @@ import {
   FaFileContract 
 } from "react-icons/fa";
 import { clearSearchResults } from "../busesSlice";
-import { busSeatLayout } from "../busesSlice";
 
 // Memoized BusCard component to prevent unnecessary re-renders
 const BusCard = memo(({ 
