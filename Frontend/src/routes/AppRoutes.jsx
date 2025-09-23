@@ -2,6 +2,7 @@
 import React, { Suspense, lazy } from "react";
 import MainLayout from "../layoutes/MainLayout";
 import { Route, Routes } from "react-router-dom";
+import BusPaymentPage from "../features/buses/pages/BusPaymentPage";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("../features/home/HomePage"));
@@ -13,6 +14,7 @@ const BusResultsPage = lazy(() => import("../features/buses/pages/BusResultsPage
 const BusSeatLayoutPage = lazy(() => import("../features/buses/pages/BusSeatLayoutPage"));
 const BusBoardingPoint = lazy(() => import("../features/buses/pages/BusBoardingPoint"));
 const BusFormDetailsPage = lazy(() => import("../features/buses/pages/BusFormDetailsPage"));
+const BusConfirmationPage = lazy(() => import("../features/buses/pages/BusConfirmationPage"));
 
 
 // Loading component
@@ -46,6 +48,8 @@ const AppRoutes = () => {
           <Route path="/busSeatLayoutPage" element={<BusSeatLayoutPage />} />
           <Route path="/busBoardingPoint" element={<BusBoardingPoint />} />
           <Route path="/busFormDetailsPage" element={<BusFormDetailsPage />} />
+          <Route path="/busPaymentPage" element={<BusPaymentPage />} />
+          <Route path="/busConfirmationPage" element={<BusConfirmationPage />} />
 
           
           

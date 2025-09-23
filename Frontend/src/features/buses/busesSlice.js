@@ -1,7 +1,22 @@
-import { createSlice, createAsyncThunk, asyncThunkCreator } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { reject } from "lodash";
 import { act } from "react";
+
+// Example: Passenger management (local state only, no API)
+const initialPassengers = [
+  {
+    Title: 'Mr',
+    FirstName: '',
+    LastName: '',
+    Age: '',
+    Gender: 'Male',
+    Mobile: '',
+    Email: '',
+    Address: '',
+    SeatId: '',
+    SeatName: ''
+  }
+];
 
 // 🔹 Authenticate API
 export const authenticateBus = createAsyncThunk(
@@ -98,6 +113,42 @@ export const busBoardingPoint=createAsyncThunk(
   }
 )
 
+export const busBlock=createAsyncThunk(
+  "buses/busBlock",
+  async({EndUserIp,ResultIndex,TraceId,TokenId,BoardingPointId,DroppingPointId,Passenger},{rejectWithValue})=>{
+    try {
+      const response=await axios.post(`${import.meta.env.VITE_API_URL}/busBlock`,{
+        EndUserIp,ResultIndex,TraceId,TokenId,BoardingPointId,DroppingPointId,Passenger
+      })
+      console.log('Redux received bus block data',response.data.data)
+      return response.data.data
+    }
+    catch (error) {
+      return rejectWithValue(error.response?.data?.error || "Bus Block Failed")
+    }
+  }
+)
+
+
+export const fetchBusBook = createAsyncThunk(
+  "buses/busBook",
+  async({EndUserIp,ResultIndex,TraceId,TokenId,BoardingPointId,DroppingPointId,Passenger},{rejectWithValue})=>{
+
+    try {
+      const response=await axios.post(`${import.meta.env.VITE_API_URL}/getBusBook`,{
+        EndUserIp,ResultIndex,TraceId,TokenId,BoardingPointId,DroppingPointId,Passenger
+      })
+      console.log("Redux received Bus Book Confirmation", response.data)
+      return response.data
+      
+    } catch (error) {
+      // CORRECTED: Changed 'err' to 'error'
+      return rejectWithValue(error.response?.data?.error || "Bus Book Failed")
+      
+    }
+  }
+)
+
 
 // Helper functions for localStorage with data expiration
 const saveToLocalStorage = (key, data, expirationHours = 24) => {
@@ -180,14 +231,47 @@ const busesSlice = createSlice({
     tokenId: loadFromLocalStorage('busTokenId'),
     cities: loadFromLocalStorage('busCities', []),
     searchResults: loadFromLocalStorage('busSearchResults', []),
-    traceId:null,
-    SeatLayoutResults:[],
-    BoardingPointsDetails:[],
-    DropingPointsDetails:[],
+    traceId: null,
+    SeatLayoutResults: [],
+    BoardingPointsDetails: [],
+    DropingPointsDetails: [],
+    // busBlockData: loadFromLocalStorage('busBlockData', null),
+    busBlockData: [],
+    passengers: loadFromLocalStorage('passengers', initialPassengers),
+    busBookData:[],
     status: "idle",
     error: null,
   },
   reducers: {
+    // Passengers
+    addPassenger: (state) => {
+      state.passengers.push({
+        Title: 'Mr',
+        FirstName: '',
+        LastName: '',
+        Age: '',
+        Gender: 'Male',
+        Mobile: '',
+        Email: '',
+        Address: '',
+        SeatId: '',
+        SeatName: ''
+      });
+      saveToLocalStorage('passengers', state.passengers);
+    },
+    removePassenger: (state, action) => {
+      state.passengers.splice(action.payload, 1);
+      saveToLocalStorage('passengers', state.passengers);
+    },
+    updatePassenger: (state, action) => {
+      const { index, field, value } = action.payload;
+      if (state.passengers[index]) {
+        state.passengers[index][field] = value;
+        saveToLocalStorage('passengers', state.passengers);
+      }
+    },
+
+    // Clear functions
     clearSearchResults: (state) => {
       state.searchResults = [];
       localStorage.removeItem('busSearchResults');
@@ -196,11 +280,23 @@ const busesSlice = createSlice({
       state.tokenId = null;
       state.cities = [];
       state.searchResults = [];
+      state.traceId = null;
+      state.SeatLayoutResults = [];
+      state.BoardingPointsDetails = [];
+      state.DropingPointsDetails = [];
+      state.busBlockData = null;
+      state.passengers = [...initialPassengers];
       state.status = "idle";
       state.error = null;
       localStorage.removeItem('busTokenId');
       localStorage.removeItem('busCities');
       localStorage.removeItem('busSearchResults');
+      localStorage.removeItem('busBlockData');
+      localStorage.removeItem('passengers');
+    },
+    clearBusBlockData: (state) => {
+      state.busBlockData = null;
+      localStorage.removeItem('busBlockData');
     }
   },
 
@@ -295,8 +391,50 @@ const busesSlice = createSlice({
         state.error=action.payload
       })
 
+      //Bus Block
+
+      .addCase(busBlock.pending,(state)=>{
+        state.status="loading"
+        state.error=null
+      })
+      .addCase(busBlock.fulfilled,(state,action)=>{
+        state.status="succeeded"
+        state.busBlockData = action.payload
+        saveToLocalStorage('busBlockData', action.payload, 0.5); // Block data expires in 30 minutes
+        console.log('Redux received bus block payload data',action.payload)
+      })
+      .addCase(busBlock.rejected,(state,action)=>{
+        state.status="failed"
+        state.error=action.payload
+      })
+
+
+      //Bus Book
+
+      .addCase(fetchBusBook.pending,(state)=>{
+        state.status="loading"
+        state.error=null
+      })
+
+      .addCase(fetchBusBook.fulfilled,(state,action)=>{
+        state.status="succeeded"
+        state.busBookData=action.payload
+        console.log("Redux received bus Book payload Data", action.payload)
+      })
+
+      .addCase(fetchBusBook.rejected,(state,action)=>{
+        state.status= "failed"
+        state.error= action.payload
+      })
   },
 });
 
-export const { clearSearchResults, clearAllData } = busesSlice.actions;
+export const {
+  addPassenger,
+  removePassenger,
+  updatePassenger,
+  clearSearchResults,
+  clearAllData,
+  clearBusBlockData
+} = busesSlice.actions;
 export default busesSlice.reducer;

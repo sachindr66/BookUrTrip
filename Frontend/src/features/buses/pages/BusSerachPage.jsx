@@ -28,6 +28,7 @@ const BusSearchPage = () => {
   const [toInput, setToInput] = useState("");
   const [fromSearch, setFromSearch] = useState("");
   const [toSearch, setToSearch] = useState("");
+  const [toSearch1, setToSearch1] = useState("");
 
   const dropdownRef = useRef();
 
@@ -168,6 +169,19 @@ const BusSearchPage = () => {
         {status === "loading" && <p>Loading cities...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
+          <input type="text" name="" id=""  className="input-field w-full"
+
+                onChange={()=>{
+                  setToSearch1(e.target.value)
+
+                }}
+
+                onFocus={()=>
+                  setActiveDropdown("toSearch1")
+                }
+                
+                />
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           {/* From */}
           <div className="relative">
@@ -188,7 +202,7 @@ const BusSearchPage = () => {
             {activeDropdown === "from" && (
               <ul className="absolute w-full bg-white text-gray-600 border rounded mt-1 max-h-40 overflow-y-auto z-10">
                 {filteredFromCities.length > 0 ? (
-                  filteredFromCities.map((c) => (
+                  filteredFromCities.slice(0,10).map((c) => (
                     <li
                       key={c.CityId}
                       onClick={() => handleSelectCity(c, "from")}
@@ -213,7 +227,7 @@ const BusSearchPage = () => {
               <FaExchangeAlt className="h-5 w-5 text-primary-600" />
             </button>
           </div>
-
+          
           {/* To */}
           <div className="relative">
             <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -233,7 +247,7 @@ const BusSearchPage = () => {
             {activeDropdown === "to" && (
               <ul className="absolute w-full bg-white text-gray-600 border rounded mt-1 max-h-40 overflow-y-auto z-10">
                 {filteredToCities.length > 0 ? (
-                  filteredToCities.map((c) => (
+                  filteredToCities.slice(0,10).map((c) => (
                     <li
                       key={c.CityId}
                       onClick={() => handleSelectCity(c, "to")}

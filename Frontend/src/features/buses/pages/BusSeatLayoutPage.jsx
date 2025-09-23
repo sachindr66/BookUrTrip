@@ -8,6 +8,7 @@ const BusSeatLayoutPage = () => {
   const location = useLocation()
   const { tokenId, status, error, SeatLayoutResults ,BoardingPointsDetails=[]} = useSelector((s) => s.buses)
   const [selectedSeats, setSelectedSeats] = useState([])
+  const [selectedSeatData, setSelectedSeatData] = useState([]) // Store complete seat data
 
   const navigate = useNavigate()
 
@@ -17,7 +18,15 @@ const BusSeatLayoutPage = () => {
   console.log("BoardingPointsDetails", BoardingPointsDetails)
 
   const goToBoardingPoints = () => {
-    navigate("/busBoardingPoint")
+    navigate("/busBoardingPoint",{
+      state: {
+        selectedBus: selectedBus,
+        traceId: traceId,
+        tokenId: tokenId,
+        selectedSeats: selectedSeats,
+        selectedSeatData: selectedSeatData
+      }
+    },[navigate, selectedBus, traceId, tokenId])  
   }
 
   // Helper to get seat identifier
@@ -42,12 +51,20 @@ const BusSeatLayoutPage = () => {
 
 
   // Handle seat click
-  const handleSeatClick = useCallback((seatIdentifier) => {
-    setSelectedSeats((prevSelected) =>
-      prevSelected.includes(seatIdentifier)
-        ? prevSelected.filter((seat) => seat !== seatIdentifier)
-        : [...prevSelected, seatIdentifier]
-    )
+  const handleSeatClick = useCallback((seatIdentifier, seatData) => {
+    setSelectedSeats((prevSelected) => {
+      const isCurrentlySelected = prevSelected.includes(seatIdentifier)
+      
+      if (isCurrentlySelected) {
+        // Remove seat from selection
+        setSelectedSeatData(prev => prev.filter(seat => seat.SeatName !== seatIdentifier))
+        return prevSelected.filter((seat) => seat !== seatIdentifier)
+      } else {
+        // Add seat to selection
+        setSelectedSeatData(prev => [...prev, seatData])
+        return [...prevSelected, seatIdentifier]
+      }
+    })
   }, [])
 
   // Determine seat status
@@ -171,7 +188,7 @@ const BusSeatLayoutPage = () => {
                         <div key={seat.SeatIndex ?? seatName} className="relative">
                           <div
                             className={getSeatClass(seat)}
-                            onClick={() => available && handleSeatClick(seatName)}
+                            onClick={() => available && handleSeatClick(seatName, seat)}
                             title={`Seat ${seatName} - ${berthType} - ${
                               available ? 'Available' : 'Booked'
                             } - ₹${seatPrice}`}
@@ -213,31 +230,43 @@ const BusSeatLayoutPage = () => {
         {selectedSeats.length > 0 && (
           <div className="mt-6 bg-primary-50 border border-primary-200 rounded-lg p-4">
             <h4 className="font-semibold text-primary-800 mb-2">Selected Seats:</h4>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {selectedSeats.map((seat) => (
-                <span
-                  key={seat}
-                  className="bg-primary-500 text-white px-3 py-1 rounded-full text-sm"
-                >
-                  {seat}
-                </span>
+            
+            {/* Detailed Seat Information */}
+            <div className="mb-4">
+              {selectedSeatData.map((seat, index) => (
+                <div key={seat.SeatIndex} className="flex items-center justify-between bg-white rounded-lg p-3 mb-2">
+                  <div className="flex items-center gap-3">
+                    <span className="bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {seat.SeatName}
+                    </span>
+                    <div className="text-sm text-gray-600">
+                      <div>Seat ID: {seat.SeatIndex}</div>
+                      <div>Type: {seat.IsUpper ? 'Upper' : 'Lower'}</div>
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium text-gray-800">
+                    ₹{seat.SeatFare || seat.Price?.PublishedPriceRoundedOff || 'N/A'}
+                  </div>
+                </div>
               ))}
             </div>
+
             <div className="text-sm text-gray-600 mb-3">
-              Total: {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''} × ₹5 = ₹
-              {selectedSeats.length * 5}
+              Total: {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''} - ₹
+              {selectedSeatData.reduce((total, seat) => total + (seat.SeatFare || 0), 0)}
             </div>
+            
             <button
               className="btn-primary"
               disabled={selectedSeats.length === 0}
+              onClick={goToBoardingPoints}
             >
-              Proceed to Payment (₹{selectedSeats.length * 5})
+              Proceed to Boarding Points
             </button>
 
           </div>
         )}
         
-        <button className='btn-primary' onClick={goToBoardingPoints}> Next </button>
       </div>
     )
   }
