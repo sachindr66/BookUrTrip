@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import router from "./routes/busRoutes.js";
+import busRouter from "./routes/busRoutes.js";
+import transferRouter from "./routes/transferRoutes.js";
 
 dotenv.config();
 
@@ -21,7 +22,8 @@ app.get("/", (req, res) => {
   res.send("Hello from backend with CORS 🚀");
 });
 
-app.use('/',router)
+app.use('/',busRouter)
+app.use('/',transferRouter)
 
 // Start server
 const PORT = process.env.PORT || 5000;

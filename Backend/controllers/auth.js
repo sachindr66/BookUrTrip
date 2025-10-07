@@ -42,6 +42,7 @@ export const authenticateBusAPI = async (req, res) => {
   }
 }
 
+
 export const getBusCityList = async (req, res) => {
   const { TokenId } = req.body;
   
