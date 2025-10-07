@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+
+
 /* Custom CSS Variables for Blue Gradient Theme */
 :root {
   --color-primary: #0052D4;

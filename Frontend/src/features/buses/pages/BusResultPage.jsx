@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { fetchBusBook } from '../busesSlice'
+import BusSearchPage from './BusSerachPage'
 
 const BusPaymentPages = () => {
   const dispatch = useDispatch()
@@ -71,6 +72,7 @@ const BusPaymentPages = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <BusSearchPage/>
       <h1 className="text-3xl font-bold mb-8 text-center">Processing Booking</h1>
 
       <div className="bg-white border rounded-lg p-8 text-center">

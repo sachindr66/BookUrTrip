@@ -13,6 +13,7 @@ import {
   FaFileContract 
 } from "react-icons/fa";
 import { clearSearchResults } from "../busesSlice";
+import BusSearchPage from "./BusSerachPage";
 
 // Memoized BusCard component to prevent unnecessary re-renders
 const BusCard = memo(({ 
@@ -30,6 +31,7 @@ const BusCard = memo(({
   const rating = getRandomRating(bus);
   
   return (
+
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       {/* Main Card Content */}
       <div className="p-6">
@@ -294,6 +296,8 @@ const BusCard = memo(({
         )}
       </div>
     </div>
+
+
   );
 });
 
@@ -476,6 +480,9 @@ const BusResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <div>
+        <BusSearchPage/>
+      </div>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
@@ -504,6 +511,7 @@ const BusResultsPage = () => {
 
       {/* Results */}
       <div className="container-custom px-4 py-8">
+
         <div className="space-y-4">
           {searchResults.map((bus, index) => (
             <BusCard

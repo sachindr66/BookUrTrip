@@ -304,7 +304,7 @@ const busesSlice = createSlice({
     builder
       // Authenticate
       .addCase(authenticateBus.pending, (state) => {
-        state.status = "loading";
+        state.status = "authloading";
         state.error = null;
       })
       .addCase(authenticateBus.fulfilled, (state, action) => {
@@ -319,7 +319,7 @@ const busesSlice = createSlice({
 
       // Fetch Cities
       .addCase(fetchBusCityList.pending, (state) => {
-        state.status = "loading";
+        state.status = "citiesloading";
       })
       .addCase(fetchBusCityList.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -336,7 +336,7 @@ const busesSlice = createSlice({
 
       //Search Bus
       .addCase(fetchSearch.pending, (state)=>{
-        state.status="loading"
+        state.status="searchloading"
       })
       .addCase(fetchSearch.fulfilled, (state, action)=>{
         state.status = "succeeded"
@@ -355,7 +355,7 @@ const busesSlice = createSlice({
       //Bus SeatLayout
 
      .addCase(busSeatLayout.pending, (state, action)=>{
-      state.status= "loading"
+      state.status= "seatloading"
       state.error = null;
      })
 
@@ -375,7 +375,7 @@ const busesSlice = createSlice({
       //Bus BoardingPointsDetails
 
       .addCase(busBoardingPoint.pending,(state)=>{
-        state.status="loading"
+        state.status="boardingloading"
         state.error = null;
       })
       .addCase(busBoardingPoint.fulfilled,(state,action)=>{
@@ -394,7 +394,7 @@ const busesSlice = createSlice({
       //Bus Block
 
       .addCase(busBlock.pending,(state)=>{
-        state.status="loading"
+        state.status="blockloading"
         state.error=null
       })
       .addCase(busBlock.fulfilled,(state,action)=>{
@@ -412,7 +412,7 @@ const busesSlice = createSlice({
       //Bus Book
 
       .addCase(fetchBusBook.pending,(state)=>{
-        state.status="loading"
+        state.status="bookloading"
         state.error=null
       })
 
