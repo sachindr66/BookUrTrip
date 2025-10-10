@@ -15,6 +15,7 @@ const Navbar = () => {
     { name: 'Buses', path: '/buses', icon: '🚌' },
     { name: 'Bookings', path: '/bookings', icon: '📋' },
     { name: 'Profile', path: '/profile', icon: '👤' },
+    { name: 'Transfer', path: '/TransferHome', icon: '👤' },
   ];
 
   const isActiveRoute = (path) => {
