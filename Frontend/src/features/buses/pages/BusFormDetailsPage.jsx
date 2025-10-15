@@ -9,11 +9,11 @@ const BusFormDetailsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
-  const {tokenId, traceId, passengers, status} = useSelector((state)=>state.buses)
+  const { tokenId, traceId, passengers, status } = useSelector((state) => state.buses)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  
+
   // Get data from navigation state
   const location = useLocation()
   const selectedBoardingPoint = location.state?.selectedBoardingPoint
@@ -21,14 +21,14 @@ const BusFormDetailsPage = () => {
   const selectedSeats = location.state?.selectedSeats || []
   const selectedSeatData = location.state?.selectedSeatData || []
   const selectedBus = location.state?.selectedBus
-  
+
   // Debug: Log the values we're getting from Redux
   console.log('Redux state values:', {
     tokenId,
     traceId,
     passengersCount: passengers?.length
   })
-  
+
   // Debug: Log navigation state
   console.log('Navigation state:', {
     selectedBus,
@@ -63,7 +63,7 @@ const BusFormDetailsPage = () => {
     if (selectedSeats.length > 0 && passengers.length !== selectedSeats.length) {
       const currentCount = passengers.length
       const targetCount = selectedSeats.length
-      
+
       if (targetCount > currentCount) {
         // Add passengers
         for (let i = currentCount; i < targetCount; i++) {
@@ -78,152 +78,152 @@ const BusFormDetailsPage = () => {
     }
   }, [selectedSeats.length, passengers.length, dispatch])
 
-   // Handler functions for passenger management
-   const handleAddPassenger = () => {
-     dispatch(addPassenger());
-   };
+  // Handler functions for passenger management
+  const handleAddPassenger = () => {
+    dispatch(addPassenger());
+  };
 
-   const handleRemovePassenger = (index) => {
-     if (passengers.length > 1) {
-       dispatch(removePassenger(index));
-     }
-   };
+  const handleRemovePassenger = (index) => {
+    if (passengers.length > 1) {
+      dispatch(removePassenger(index));
+    }
+  };
 
-   const handlePassengerChange = (index, field, value) => {
-     dispatch(updatePassenger({ index, field, value }));
-     // Clear any existing errors for this field
-     if (formErrors[`passenger_${index}_${field}`]) {
-       setFormErrors(prev => {
-         const newErrors = { ...prev };
-         delete newErrors[`passenger_${index}_${field}`];
-         return newErrors;
-       });
-     }
-   };
+  const handlePassengerChange = (index, field, value) => {
+    dispatch(updatePassenger({ index, field, value }));
+    // Clear any existing errors for this field
+    if (formErrors[`passenger_${index}_${field}`]) {
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[`passenger_${index}_${field}`];
+        return newErrors;
+      });
+    }
+  };
 
-    const handleClickProceedToPayment = () => {
-      navigate('/busPaymentPage',{
-        state: {
-          passengers: passengers,
-          traceId: traceId,
-          tokenId: tokenId,
-          boardingPointId: selectedBoardingPoint?.CityPointIndex || 1,
-          droppingPointId: selectedDroppingPoint?.CityPointIndex || 1,
-          endUserIp: '192.168.1.1',
-          resultIndex: selectedBus?.ResultIndex || 0,
-          selectedBoardingPoint: selectedBoardingPoint,
-          selectedDroppingPoint: selectedDroppingPoint,
-          selectedSeats: selectedSeats,
-          selectedSeatData: selectedSeatData
-        }
-      })
+  const handleClickProceedToPayment = () => {
+    navigate('/busPaymentPage', {
+      state: {
+        passengers: passengers,
+        traceId: traceId,
+        tokenId: tokenId,
+        boardingPointId: selectedBoardingPoint?.CityPointIndex || 1,
+        droppingPointId: selectedDroppingPoint?.CityPointIndex || 1,
+        endUserIp: '192.168.1.1',
+        resultIndex: selectedBus?.ResultIndex || 0,
+        selectedBoardingPoint: selectedBoardingPoint,
+        selectedDroppingPoint: selectedDroppingPoint,
+        selectedSeats: selectedSeats,
+        selectedSeatData: selectedSeatData
+      }
+    })
+  }
+
+
+  // Form validation
+  const validateForm = () => {
+    const errors = {};
+
+    passengers.forEach((passenger, index) => {
+      if (!passenger.Title) errors[`passenger_${index}_Title`] = 'Title is required';
+      if (!passenger.FirstName) errors[`passenger_${index}_FirstName`] = 'First name is required';
+      if (!passenger.LastName) errors[`passenger_${index}_LastName`] = 'Last name is required';
+      if (!passenger.Age) errors[`passenger_${index}_Age`] = 'Age is required';
+      if (!passenger.Gender) errors[`passenger_${index}_Gender`] = 'Gender is required';
+      if (!passenger.Mobile) errors[`passenger_${index}_Mobile`] = 'Mobile is required';
+      if (!passenger.Email) errors[`passenger_${index}_Email`] = 'Email is required';
+      if (!passenger.Address) errors[`passenger_${index}_Address`] = 'Address is required';
+
+      // Email validation
+      if (passenger.Email && !/\S+@\S+\.\S+/.test(passenger.Email)) {
+        errors[`passenger_${index}_Email`] = 'Please enter a valid email';
+      }
+
+      // Mobile validation (basic)
+      if (passenger.Mobile && !/^\d{10}$/.test(passenger.Mobile)) {
+        errors[`passenger_${index}_Mobile`] = 'Please enter a valid 10-digit mobile number';
+      }
+    });
+
+    return errors;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
     }
 
+    // Validate required API fields
+    if (!tokenId || !traceId) {
+      alert('Missing required booking information. Please go back and try again.');
+      return;
+    }
 
-   // Form validation
-   const validateForm = () => {
-     const errors = {};
-     
-     passengers.forEach((passenger, index) => {
-       if (!passenger.Title) errors[`passenger_${index}_Title`] = 'Title is required';
-       if (!passenger.FirstName) errors[`passenger_${index}_FirstName`] = 'First name is required';
-       if (!passenger.LastName) errors[`passenger_${index}_LastName`] = 'Last name is required';
-       if (!passenger.Age) errors[`passenger_${index}_Age`] = 'Age is required';
-       if (!passenger.Gender) errors[`passenger_${index}_Gender`] = 'Gender is required';
-       if (!passenger.Mobile) errors[`passenger_${index}_Mobile`] = 'Mobile is required';
-       if (!passenger.Email) errors[`passenger_${index}_Email`] = 'Email is required';
-       if (!passenger.Address) errors[`passenger_${index}_Address`] = 'Address is required';
-       
-       // Email validation
-       if (passenger.Email && !/\S+@\S+\.\S+/.test(passenger.Email)) {
-         errors[`passenger_${index}_Email`] = 'Please enter a valid email';
-       }
-       
-       // Mobile validation (basic)
-       if (passenger.Mobile && !/^\d{10}$/.test(passenger.Mobile)) {
-         errors[`passenger_${index}_Mobile`] = 'Please enter a valid 10-digit mobile number';
-       }
-     });
-     
-     return errors;
-   };
+    setIsSubmitting(true);
+    setFormErrors({});
 
-   // Handle form submission
-   const handleSubmit = async (e) => {
-     e.preventDefault();
-     
-     const errors = validateForm();
-     if (Object.keys(errors).length > 0) {
-       setFormErrors(errors);
-       return;
-     }
-     
-     // Validate required API fields
-     if (!tokenId || !traceId) {
-       alert('Missing required booking information. Please go back and try again.');
-       return;
-     }
-     
-     setIsSubmitting(true);
-     setFormErrors({});
-     
-     try {
-       // Transform passengers to match backend expected format
-       const transformedPassengers = passengers.map(passenger => {
-         console.log('Transforming passenger:', passenger);
-         const transformed = {
-           Title: passenger.Title,
-           FirstName: passenger.FirstName,
-           LastName: passenger.LastName,
-           Age: passenger.Age,
-           Gender: passenger.Gender,
-           Phoneno: passenger.Mobile, // Backend expects Phoneno, not Mobile
-           Email: passenger.Email,
-           Address: passenger.Address,
-           Seat: {
-             SeatIndex: passenger.SeatId, // Backend expects SeatIndex in Seat object
-             SeatName: passenger.SeatName
-           }
-         };
-         console.log('Transformed passenger:', transformed);
-         return transformed;
-       });
+    try {
+      // Transform passengers to match backend expected format
+      const transformedPassengers = passengers.map(passenger => {
+        console.log('Transforming passenger:', passenger);
+        const transformed = {
+          Title: passenger.Title,
+          FirstName: passenger.FirstName,
+          LastName: passenger.LastName,
+          Age: passenger.Age,
+          Gender: passenger.Gender,
+          Phoneno: passenger.Mobile, // Backend expects Phoneno, not Mobile
+          Email: passenger.Email,
+          Address: passenger.Address,
+          Seat: {
+            SeatIndex: passenger.SeatId, // Backend expects SeatIndex in Seat object
+            SeatName: passenger.SeatName
+          }
+        };
+        console.log('Transformed passenger:', transformed);
+        return transformed;
+      });
 
-       const data = {
-         EndUserIp: '192.168.1.1',
-         ResultIndex: selectedBus?.ResultIndex || 0,
-         TraceId: traceId,
-         TokenId: tokenId,
-         BoardingPointId: selectedBoardingPoint?.CityPointIndex || 1,
-         DroppingPointId: selectedDroppingPoint?.CityPointIndex || 1,
-         Passenger: transformedPassengers
-       };
-       
-       console.log('Sending busBlock data:', data);
-       console.log('Original passenger data:', passengers);
-       console.log('Transformed passenger data:', transformedPassengers);
-       console.log('Data being sent to Redux:', {
-         EndUserIp: data.EndUserIp,
-         ResultIndex: data.ResultIndex,
-         TraceId: data.TraceId,
-         TokenId: data.TokenId,
-         BoardingPointId: data.BoardingPointId,
-         DroppingPointId: data.DroppingPointId,
-         Passenger: data.Passenger
-       });
-       
-       await dispatch(busBlock(data)).unwrap();
-       console.log('Bus block successful');
-       
-       // Navigate to payment page after successful bus block
-       handleClickProceedToPayment();
-     } catch (error) {
-       console.error('Bus block failed:', error);
-       alert('Booking failed. Please try again.');
-     } finally {
-       setIsSubmitting(false);
-     }
-   };
+      const data = {
+        EndUserIp: '192.168.1.1',
+        ResultIndex: selectedBus?.ResultIndex || 0,
+        TraceId: traceId,
+        TokenId: tokenId,
+        BoardingPointId: selectedBoardingPoint?.CityPointIndex || 1,
+        DroppingPointId: selectedDroppingPoint?.CityPointIndex || 1,
+        Passenger: transformedPassengers
+      };
+
+      console.log('Sending busBlock data:', data);
+      console.log('Original passenger data:', passengers);
+      console.log('Transformed passenger data:', transformedPassengers);
+      console.log('Data being sent to Redux:', {
+        EndUserIp: data.EndUserIp,
+        ResultIndex: data.ResultIndex,
+        TraceId: data.TraceId,
+        TokenId: data.TokenId,
+        BoardingPointId: data.BoardingPointId,
+        DroppingPointId: data.DroppingPointId,
+        Passenger: data.Passenger
+      });
+
+      await dispatch(busBlock(data)).unwrap();
+      console.log('Bus block successful');
+
+      // Navigate to payment page after successful bus block
+      handleClickProceedToPayment();
+    } catch (error) {
+      console.error('Bus block failed:', error);
+      alert('Booking failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -234,7 +234,7 @@ const BusFormDetailsPage = () => {
             <i className="fas fa-route text-blue-600"></i>
             Journey Summary
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Boarding Point */}
             {selectedBoardingPoint && (
@@ -319,7 +319,7 @@ const BusFormDetailsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium">Title *</label>
-                <select 
+                <select
                   className={`mt-1 w-full border rounded-lg p-2 ${formErrors[`passenger_${index}_Title`] ? 'border-red-500' : ''}`}
                   value={passenger.Title}
                   onChange={(e) => handlePassengerChange(index, 'Title', e.target.value)}
@@ -374,7 +374,7 @@ const BusFormDetailsPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium">Gender *</label>
-                <select 
+                <select
                   className={`mt-1 w-full border rounded-lg p-2 ${formErrors[`passenger_${index}_Gender`] ? 'border-red-500' : ''}`}
                   value={passenger.Gender}
                   onChange={(e) => handlePassengerChange(index, 'Gender', e.target.value)}
@@ -499,11 +499,10 @@ const BusFormDetailsPage = () => {
         <button
           type="submit"
           disabled={isSubmitting || status === 'loading'}
-          className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
-            isSubmitting || status === 'loading'
+          className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${isSubmitting || status === 'loading'
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700'
-          } text-white`}
+            } text-white`}
         >
           {isSubmitting || status === 'loading' ? (
             <>
@@ -514,7 +513,7 @@ const BusFormDetailsPage = () => {
             'Proceed to Payment'
           )}
         </button>
-        
+
         {/* Error Display */}
         {status === 'failed' && (
           <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">

@@ -16,14 +16,14 @@ const BusBoardingPoint = () => {
   const selectedSeats = location.state?.selectedSeats;
   const selectedSeatData = location.state?.selectedSeatData;
 
-  const { BoardingPointsDetails = [], DropingPointsDetails=[], tokenId, status, error } = useSelector((state) => state.buses);
+  const { BoardingPointsDetails = [], DropingPointsDetails = [], tokenId, status, error } = useSelector((state) => state.buses);
 
   const formdetails = () => {
     if (!selectedBoardingPoint || !selectedDroppingPoint) {
       alert('Please select both boarding and dropping points')
       return
     }
-    
+
     navigate('/busFormDetailsPage', {
       state: {
         selectedBus,
@@ -48,11 +48,12 @@ const BusBoardingPoint = () => {
   //   dispatch(busBoardingPoint(BoardingParams));
   // }, [dispatch, tokenId, selectedBus, traceId, status]);
 
-  console.log('Boarding pages Boardingpoints',BoardingPointsDetails);
-  console.log('Boarding pages Dropingpoints',DropingPointsDetails);
+  console.log('Boarding pages Boardingpoints', BoardingPointsDetails);
+  console.log('Boarding pages Dropingpoints', DropingPointsDetails);
 
   if (status === 'loading') return <p>Loading boarding points...</p>;
   if (status === 'failed') return <p>Error: {error}</p>;
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -69,7 +70,7 @@ const BusBoardingPoint = () => {
               <i className="fas fa-map-marker-alt text-blue-600"></i>
               Boarding Points
             </h2>
-            
+
             {BoardingPointsDetails.length === 0 ? (
               <p className="text-gray-500 text-center py-4">No boarding points available.</p>
             ) : (
@@ -77,19 +78,17 @@ const BusBoardingPoint = () => {
                 {BoardingPointsDetails.map((point) => (
                   <div
                     key={point.CityPointIndex}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
-                      selectedBoardingPoint?.CityPointIndex === point.CityPointIndex
+                    className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedBoardingPoint?.CityPointIndex === point.CityPointIndex
                         ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                         : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                    }`}
+                      }`}
                     onClick={() => setSelectedBoardingPoint(point)}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
-                        selectedBoardingPoint?.CityPointIndex === point.CityPointIndex
+                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${selectedBoardingPoint?.CityPointIndex === point.CityPointIndex
                           ? 'border-blue-500 bg-blue-500'
                           : 'border-gray-300'
-                      }`}>
+                        }`}>
                         {selectedBoardingPoint?.CityPointIndex === point.CityPointIndex && (
                           <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
                         )}
@@ -119,7 +118,7 @@ const BusBoardingPoint = () => {
               <i className="fas fa-flag-checkered text-green-600"></i>
               Dropping Points
             </h2>
-            
+
             {DropingPointsDetails.length === 0 ? (
               <p className="text-gray-500 text-center py-4">No dropping points available.</p>
             ) : (
@@ -127,19 +126,17 @@ const BusBoardingPoint = () => {
                 {DropingPointsDetails.map((point) => (
                   <div
                     key={point.CityPointIndex}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
-                      selectedDroppingPoint?.CityPointIndex === point.CityPointIndex
+                    className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedDroppingPoint?.CityPointIndex === point.CityPointIndex
                         ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
                         : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-                    }`}
+                      }`}
                     onClick={() => setSelectedDroppingPoint(point)}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
-                        selectedDroppingPoint?.CityPointIndex === point.CityPointIndex
+                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${selectedDroppingPoint?.CityPointIndex === point.CityPointIndex
                           ? 'border-green-500 bg-green-500'
                           : 'border-gray-300'
-                      }`}>
+                        }`}>
                         {selectedDroppingPoint?.CityPointIndex === point.CityPointIndex && (
                           <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
                         )}
@@ -196,15 +193,14 @@ const BusBoardingPoint = () => {
             <i className="fas fa-arrow-left mr-2"></i>
             Back to Seats
           </button>
-          
+
           <button
             onClick={formdetails}
             disabled={!selectedBoardingPoint || !selectedDroppingPoint}
-            className={`px-8 py-3 rounded-lg font-semibold transition ${
-              selectedBoardingPoint && selectedDroppingPoint
+            className={`px-8 py-3 rounded-lg font-semibold transition ${selectedBoardingPoint && selectedDroppingPoint
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+              }`}
           >
             Continue to Passenger Details
             <i className="fas fa-arrow-right ml-2"></i>
