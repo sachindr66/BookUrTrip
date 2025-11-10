@@ -73,12 +73,12 @@ dotenv.config();
 
 export const getFlightsAirports = async (req, res) => {
     try {
-        console.log("🚀 Making Trateq API request from Vercel...", {
-            domain: process.env.DOMAIN,
-            loginId: process.env.LOGIN_ID,
-            hasPassword: !!process.env.PASSWORD,
-            environment: process.env.NODE_ENV,
-        });
+        // console.log("🚀 Making Trateq API request from Vercel...", {
+        //     domain: process.env.DOMAIN,
+        //     loginId: process.env.LOGIN_ID,
+        //     hasPassword: !!process.env.PASSWORD,
+        //     environment: process.env.NODE_ENV,
+        // });
 
         const requestBody = {
             Credential: {
@@ -100,7 +100,7 @@ export const getFlightsAirports = async (req, res) => {
                 timeout: 10000,
                 headers: {
                     "Content-Type": "application/json",
-                    "User-Agent": "TripAdmin/1.0",
+                    "User-Agent": "BookUrTrip/1.0",
                     "Accept": "application/json, text/plain, */*",
                 },
             }
@@ -120,24 +120,24 @@ export const getFlightsAirports = async (req, res) => {
         console.error("Error Code:", error.code);
         console.error("Stack:", error.stack);
 
-        if (error.response) {
-            console.error("🔴 RESPONSE ERROR:");
-            console.error("Status:", error.response.status);
-            console.error("Data:", JSON.stringify(error.response.data, null, 2));
+        // if (error.response) {
+        //     console.error("🔴 RESPONSE ERROR:");
+        //     console.error("Status:", error.response.status);
+        //     console.error("Data:", JSON.stringify(error.response.data, null, 2));
 
-            return res.status(error.response.status).json({
-                error: "Trateq API Error",
-                status: error.response.status,
-                data: error.response.data,
-            });
-        }
+        //     return res.status(error.response.status).json({
+        //         error: "Trateq API Error",
+        //         status: error.response.status,
+        //         data: error.response.data,
+        //     });
+        // }
 
-        if (error.request) {
-            return res.status(503).json({
-                error: "Trateq API Unavailable",
-                details: "No response received from Trateq API",
-            });
-        }
+        // if (error.request) {
+        //     return res.status(503).json({
+        //         error: "Trateq API Unavailable",
+        //         details: "No response received from Trateq API",
+        //     });
+        // }
 
         return res.status(500).json({
             error: "Internal Server Error",
