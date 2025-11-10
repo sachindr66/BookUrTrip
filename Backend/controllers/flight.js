@@ -100,10 +100,14 @@ export const getFlightsAirports = async (req, res) => {
                 timeout: 10000,
                 headers: {
                     "Content-Type": "application/json",
+                    //   "User-Agent": "TripAdmin/1.0",
                     "Accept": "application/json, text/plain, */*",
                 },
             }
         );
+
+        console.log("✅ Trateq API Success - Status:", response.status);
+        console.log("Response from flight airports API:", response.data);
 
         if (!response.data || Object.keys(response.data).length === 0) {
             return res.status(404).json({ error: "No airports found" });
@@ -115,6 +119,25 @@ export const getFlightsAirports = async (req, res) => {
         console.error("Error Message:", error.message);
         console.error("Error Code:", error.code);
         console.error("Stack:", error.stack);
+
+        if (error.response) {
+            console.error("🔴 RESPONSE ERROR:");
+            console.error("Status:", error.response.status);
+            console.error("Data:", JSON.stringify(error.response.data, null, 2));
+
+            return res.status(error.response.status).json({
+                error: "Trateq API Error",
+                status: error.response.status,
+                data: error.response.data,
+            });
+        }
+
+        if (error.request) {
+            return res.status(503).json({
+                error: "Trateq API Unavailable",
+                details: "No response received from Trateq API",
+            });
+        }
 
         return res.status(500).json({
             error: "Internal Server Error",
