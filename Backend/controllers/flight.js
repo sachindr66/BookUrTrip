@@ -100,7 +100,7 @@ export const getFlightsAirports = async (req, res) => {
                 timeout: 10000,
                 headers: {
                     "Content-Type": "application/json",
-                    //   "User-Agent": "TripAdmin/1.0",
+                    "User-Agent": "TripAdmin/1.0",
                     "Accept": "application/json, text/plain, */*",
                 },
             }
