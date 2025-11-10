@@ -73,6 +73,12 @@ dotenv.config();
 
 export const getFlightsAirports = async (req, res) => {
     try {
+        console.log("🚀 Making Trateq API request from Vercel...", {
+            domain: process.env.DOMAIN,
+            loginId: process.env.LOGIN_ID,
+            hasPassword: !!process.env.PASSWORD,
+            environment: process.env.NODE_ENV,
+        });
 
         const requestBody = {
             Credential: {
