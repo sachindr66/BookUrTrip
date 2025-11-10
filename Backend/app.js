@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import busRouter from "./routes/busRoutes.js";
 import transferRouter from "./routes/transferRoutes.js";
 import paymentroutes from "./routes/easebuzzPaymentRoutes.js";
+import flightRouter from "./routes/flightRoutes.js"
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use('/', busRouter)
 app.use('/', transferRouter)
 app.use('/', paymentroutes)
+app.use('/api', flightRouter);
 
 // Start server
 const PORT = process.env.PORT || 5000;

@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { featchAirports } from '../flightsSlice';
+
+
+
 
 const FlightsPage = () => {
   const [searchData, setSearchData] = useState({
@@ -11,6 +17,17 @@ const FlightsPage = () => {
     cabinClass: 'Economy',
     tripType: 'One Way'
   });
+
+  const disptach = useDispatch()
+
+
+  const { airports } = useSelector((state) => state.flights);
+
+  console.log("front end airports", airports)
+
+  useEffect(() => {
+    disptach(featchAirports());
+  }, [disptach]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -112,11 +129,10 @@ const FlightsPage = () => {
                     key={type}
                     type="button"
                     onClick={() => setSearchData(prev => ({ ...prev, tripType: type }))}
-                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                      searchData.tripType === type
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${searchData.tripType === type
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
                   >
                     {type}
                   </button>
@@ -273,8 +289,8 @@ const FlightsPage = () => {
                 </div>
                 <div className="flex justify-between items-center text-sm text-gray-600">
                   <span>⏱️ {route.duration}</span>
-                  <Link 
-                    to="/flights/search" 
+                  <Link
+                    to="/flights/search"
                     className="text-blue-600 hover:text-blue-700 font-medium"
                   >
                     Book Now →
