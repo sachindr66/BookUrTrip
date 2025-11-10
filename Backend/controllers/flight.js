@@ -73,6 +73,13 @@ dotenv.config();
 
 export const getFlightsAirports = async (req, res) => {
     try {
+        console.log("🚀 Making Trateq API request from Vercel...", {
+            domain: process.env.DOMAIN,
+            loginId: process.env.LOGIN_ID,
+            hasPassword: !!process.env.PASSWORD,
+            environment: process.env.NODE_ENV,
+        });
+
         const requestBody = {
             Credential: {
                 Type: "C",
@@ -105,6 +112,9 @@ export const getFlightsAirports = async (req, res) => {
         res.status(200).json(response.data);
     } catch (error) {
         console.error("🔴 TRATEQ API FAILED - FULL ERROR DETAILS:");
+        console.error("Error Message:", error.message);
+        console.error("Error Code:", error.code);
+        console.error("Stack:", error.stack);
 
         return res.status(500).json({
             error: "Internal Server Error",
