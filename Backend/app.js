@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import busRouter from "./routes/busRoutes.js";
 import transferRouter from "./routes/transferRoutes.js";
+import paymentroutes from "./routes/easebuzzPaymentRoutes.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 
 app.use('/', busRouter)
 app.use('/', transferRouter)
+app.use('/', paymentroutes)
 
 // Start server
 const PORT = process.env.PORT || 5000;
