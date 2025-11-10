@@ -5,35 +5,32 @@ import { authenticateBus, fetchBusCityList, fetchSearch } from "../busesSlice";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 
-
 const BusSearchPage = () => {
-
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
-  const { tokenId, cities=[],searchResults:[], status, error } = useSelector(
+  const { tokenId, cities = [], searchResults = [], status, error } = useSelector(
     (state) => state.buses
   );
 
-
   // States
-  const [fromLocation, setFromLocation] = useState({id: null, name: "Delhi"});
-  const [toLocation, setToLocation] = useState({id: null, name: "Jaipur"});
+  const [fromLocation, setFromLocation] = useState({ id: null, name: "Delhi" });
+  const [toLocation, setToLocation] = useState({ id: null, name: "Jaipur" });
   const [travelDate, setTravelDate] = useState("");
   const [selectedSeatType, setSelectedSeatType] = useState("");
   const [showACOnly, setShowACOnly] = useState(false);
-  const [selectedDateTab, setSelectedDateTab] = useState(1); // 0=today, 1=sat, etc.
+  const [selectedDateTab, setSelectedDateTab] = useState(1);
 
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  // separate states for inputs
+  // Separate states for inputs
   const [fromInput, setFromInput] = useState("");
   const [toInput, setToInput] = useState("");
   const [fromSearch, setFromSearch] = useState("");
   const [toSearch, setToSearch] = useState("");
-  const [toSearch1, setToSearch1] = useState("");
 
   const dropdownRef = useRef();
+  const dateInputRef = useRef();
 
   // Generate date tabs
   const generateDateTabs = () => {
@@ -64,6 +61,13 @@ const BusSearchPage = () => {
 
   const dateTabs = generateDateTabs();
 
+  // Initialize travel date
+  useEffect(() => {
+    if (dateTabs[selectedDateTab] && !travelDate) {
+      setTravelDate(dateTabs[selectedDateTab].date);
+    }
+  }, [selectedDateTab]);
+
   // Prefill from localStorage
   useEffect(() => {
     const stored = localStorage.getItem("busSearch");
@@ -71,7 +75,14 @@ const BusSearchPage = () => {
       const { fromLocation, toLocation, travelDate } = JSON.parse(stored);
       if (fromLocation) setFromLocation(fromLocation);
       if (toLocation) setToLocation(toLocation);
-      if (travelDate) setTravelDate(travelDate);
+      if (travelDate) {
+        setTravelDate(travelDate);
+        // Find the tab index for the stored date
+        const tabIndex = dateTabs.findIndex(tab => tab.date === travelDate);
+        if (tabIndex !== -1) {
+          setSelectedDateTab(tabIndex);
+        }
+      }
     }
   }, []);
 
@@ -144,11 +155,11 @@ const BusSearchPage = () => {
 
   const handleSelectCity = (city, type) => {
     if (type === "from") {
-      setFromLocation({id:city.CityId, name:city.CityName});
+      setFromLocation({ id: city.CityId, name: city.CityName });
       setFromInput("");
     }
     if (type === "to") {
-      setToLocation({id:city.CityId, name:city.CityName});
+      setToLocation({ id: city.CityId, name: city.CityName });
       setToInput("");
     }
     setActiveDropdown(null);
@@ -159,8 +170,31 @@ const BusSearchPage = () => {
     setToLocation(fromLocation);
   };
 
+  // Simple date change handler
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setTravelDate(selectedDate);
+    
+    // Update selected tab if the date matches one of the tabs
+    const tabIndex = dateTabs.findIndex(tab => tab.date === selectedDate);
+    if (tabIndex !== -1) {
+      setSelectedDateTab(tabIndex);
+    } else {
+      setSelectedDateTab(-1); // Custom date selected
+    }
+  };
+
+  const handleDateTabClick = (index) => {
+    setSelectedDateTab(index);
+    setTravelDate(dateTabs[index].date);
+  };
+
+  const getSelectedDate = () => {
+    return travelDate || dateTabs[selectedDateTab]?.date;
+  };
+
   const handleSearch = async () => {
-    const selectedDate = dateTabs[selectedDateTab]?.date;
+    const selectedDate = getSelectedDate();
     
     if (!fromLocation?.id || !toLocation?.id || !selectedDate) {
       alert("Please select From, To and Date");
@@ -194,14 +228,25 @@ const BusSearchPage = () => {
     }
   };
 
+  // Format date for display
+  const formatSelectedDate = () => {
+    if (!travelDate) return "Calendar";
+    const date = new Date(travelDate);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short' 
+    });
+  };
+
   return (
     <div className="w-full" ref={dropdownRef}>
       <div className="bg-white rounded-xl p-6 shadow-lg">
         {status === "loading" && <p>Loading cities...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
-        <div className="flex flex-col   gap-6">
-          {/* top Section - Input Fields and Options */}
+        <div className="flex flex-col gap-6">
+          {/* Top Section - Input Fields and Options */}
           <div className="flex flex-col lg:flex-row items-end gap-2">
             {/* From and To Fields */}
             <div className="flex w-full justify-center gap-4 items-end">
@@ -224,7 +269,7 @@ const BusSearchPage = () => {
                   />
                   {fromLocation?.name && (
                     <button
-                      onClick={() => setFromLocation({id: null, name: ""})}
+                      onClick={() => setFromLocation({ id: null, name: "" })}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       <FaTimes className="h-4 w-4" />
@@ -233,7 +278,7 @@ const BusSearchPage = () => {
                   {activeDropdown === "from" && (
                     <ul className="absolute w-full bg-white text-gray-600 border border-gray-300 rounded-lg mt-1 max-h-40 overflow-y-auto z-10 shadow-lg">
                       {filteredFromCities.length > 0 ? (
-                        filteredFromCities.slice(0,10).map((c) => (
+                        filteredFromCities.slice(0, 10).map((c) => (
                           <li
                             key={c.CityId}
                             onClick={() => handleSelectCity(c, "from")}
@@ -279,7 +324,7 @@ const BusSearchPage = () => {
                   />
                   {toLocation?.name && (
                     <button
-                      onClick={() => setToLocation({id: null, name: ""})}
+                      onClick={() => setToLocation({ id: null, name: "" })}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       <FaTimes className="h-4 w-4" />
@@ -288,7 +333,7 @@ const BusSearchPage = () => {
                   {activeDropdown === "to" && (
                     <ul className="absolute w-full bg-white text-gray-600 border border-gray-300 rounded-lg mt-1 max-h-40 overflow-y-auto z-10 shadow-lg">
                       {filteredToCities.length > 0 ? (
-                        filteredToCities.slice(0,10).map((c) => (
+                        filteredToCities.slice(0, 10).map((c) => (
                           <li
                             key={c.CityId}
                             onClick={() => handleSelectCity(c, "to")}
@@ -306,39 +351,53 @@ const BusSearchPage = () => {
               </div>
             </div>
 
-
-                        {/* Date Tabs */}
-              <div className="flex lg:w-1/2 w-full  items-end justify-between gap-2 ">
-                {dateTabs.map((tab, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedDateTab(index)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                      selectedDateTab === index
-                        ? "bg-blue-500 text-white"
-                        : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-                <button className="px-3 py-2 rounded-lg text-sm font-medium bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 flex flex-col items-center">
-                  <FaCalendarAlt className="h-4 w-4 mb-1" />
-                  <span className="text-xs">Calendar</span>
+            {/* Date Tabs */}
+            <div className="flex lg:w-1/2 w-full items-end justify-between gap-2">
+              {dateTabs.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleDateTabClick(index)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    selectedDateTab === index
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {tab.label}
                 </button>
+              ))}
+              
+              {/* SIMPLE SOLUTION: Visible Date Input styled like a button */}
+              <div className="relative">
+                <label className="sr-only">Select Date</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={travelDate}
+                    min={new Date().toISOString().split("T")[0]}
+                    onChange={handleDateChange}
+                    className="w-full h-full px-3 py-2 rounded-lg text-sm font-medium bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 cursor-pointer appearance-none"
+                    style={{ 
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 8px center',
+                      backgroundSize: '16px 16px',
+                      paddingRight: '2.5rem'
+                    }}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <FaCalendarAlt className="h-4 w-4 text-gray-400" />
+                  </div>
+                </div>
               </div>
-
-
-
-
+            </div>
           </div>
 
-          {/* bottum Section - bustype Selection and Search Button */}
-          <div className=" flex  flex-col lg:flex-row  w-full justify-between space-y-4">
-
-                      {/* Seat Type Options */}
+          {/* Bottom Section - bustype Selection and Search Button */}
+          <div className="flex flex-col lg:flex-row w-full justify-between space-y-4">
+            {/* Seat Type Options */}
             <div className="flex flex-col w-full">
-              <label className=" text-sm font-medium text-gray-600 mb-2">
+              <label className="text-sm font-medium text-gray-600 mb-2">
                 Seat type (optional)
               </label>
               <div className="flex w-full gap-2">
@@ -358,8 +417,8 @@ const BusSearchPage = () => {
               </div>
             </div>
 
-                        {/* AC Buses Checkbox */}
-            <div className="flex  w-full items-center">
+            {/* AC Buses Checkbox */}
+            <div className="flex w-full items-center">
               <input
                 type="checkbox"
                 id="acOnly"
@@ -397,4 +456,3 @@ const BusSearchPage = () => {
 };
 
 export default BusSearchPage;
-

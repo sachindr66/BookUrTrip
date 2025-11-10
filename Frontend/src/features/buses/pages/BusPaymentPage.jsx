@@ -1,111 +1,82 @@
-
-
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { fetchBusBook } from '../busesSlice'
+import React, { useState } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { fetchBusBook } from "../busesSlice";
 
 const BusPaymentPage = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  
-  const [isProcessing, setIsProcessing] = useState(false)
-  
-  // Get data from Redux store and location state
-  const { busBlockData, status, error } = useSelector((state) => state.buses)
-  const { passengers, traceId, tokenId, boardingPointId, droppingPointId, endUserIp, resultIndex } = location.state || {}
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    console.log("Bus block data from Redux:", busBlockData)
-    console.log("Navigation state data:", location.state)
-  }, [busBlockData, location.state])
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Automatically proceed to booking when component mounts
-  useEffect(() => {
-    if (busBlockData && !isProcessing) {
-      handleProceedToBooking()
-    }
-  }, [busBlockData])
+  const { busBlockData } = useSelector((state) => state.buses);
+  const { passengers, traceId, tokenId, boardingPointId, droppingPointId, endUserIp, resultIndex } =
+    location.state || {};
 
-  const handleProceedToBooking = async () => {
-  if (!busBlockData) {
-    alert('No booking data found. Please go back and try again.')
-    return
-  }
-
-  setIsProcessing(true)
-  
-  try {
-    // Use the complete busBlockData instead of transforming passengers
-    const bookingData = {
-      Passenger: busBlockData.BlockResult.Passenger,  // Use the passengers from block response
-      TokenId: tokenId,
-      TraceId: traceId,
-      EndUserIp: endUserIp,
-      ResultIndex: resultIndex,
-      BoardingPointId: boardingPointId,
-      DroppingPointId: droppingPointId
+  const handleEasebuzzPayment = async () => {
+    if (!busBlockData) {
+      alert("Booking data missing. Please go back and try again.");
+      return;
     }
 
-    console.log("Sending booking data:", bookingData)
-    
-    // Dispatch the booking action
-    const result = await dispatch(fetchBusBook(bookingData)).unwrap()
-    console.log("Booking successful:", result)
-    
-    // Navigate to confirmation page with booking data
-    navigate('/busConfirmationPage', {
-      state: {
-        busBookData: result
+    try {
+      setIsProcessing(true);
+
+      // ✅ Generate unique transaction ID
+      const txnid = "TXN" + Date.now();
+
+      // ✅ Call your backend to get payment access key
+      const response = await axios.post("http://localhost:5000/easebuzzPayment/Initiate_Payment", {
+        txnid,
+        amount: "100.00", // You can use dynamic price
+        productinfo: "Bus Ticket",
+        firstname: passengers?.[0]?.FirstName || "User",
+        email: "test@example.com",
+        phone: "9876543210",
+        surl: "http://localhost:5173/payment-success", // After payment success
+        furl: "http://localhost:5173/payment-failure", // If failed
+      });
+
+      if (response.data?.success && response.data?.data?.data) {
+        const accessKey = response.data.data.data;
+        const paymentUrl = `https://testpay.easebuzz.in/pay/${accessKey}`;
+
+        // ✅ Redirect user to Easebuzz payment gateway
+        window.location.href = paymentUrl;
+      } else {
+        alert("Failed to initiate payment. Try again.");
       }
-    })
-    
-  } catch (error) {
-    console.error("Booking failed:", error)
-    alert('Booking failed. Please try again.')
-  } finally {
-    setIsProcessing(false)
-  }
-}
+    } catch (error) {
+      console.error("Payment initiation error:", error);
+      alert("Payment initiation failed.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Processing Booking</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Bus Payment Page</h1>
 
       <div className="bg-white border rounded-lg p-8 text-center">
-        <div className="flex justify-center mb-6">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-        
-        <h2 className="text-xl font-semibold mb-4">Completing your booking...</h2>
-        <p className="text-gray-600 mb-6">Please wait while we confirm your reservation.</p>
-        
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-          <h3 className="font-medium text-blue-800 mb-2">Booking Summary</h3>
-          <p className="text-sm text-blue-700">
-            {passengers?.length || 0} passenger(s) • Seat booking in progress
-          </p>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Complete Your Payment</h2>
+        <p className="text-gray-600 mb-6">Click the button below to proceed to secure payment.</p>
 
-        {error && (
-          <div className="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg max-w-md mx-auto">
-            <h3 className="font-medium mb-2">Booking Error</h3>
-            <p>{error.message || 'Failed to process booking. Please try again.'}</p>
-            <button 
-              className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
-              onClick={handleProceedToBooking}
-            >
-              Retry Booking
-            </button>
-          </div>
-        )}
+        <button
+          onClick={handleEasebuzzPayment}
+          disabled={isProcessing}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isProcessing ? "Processing..." : "Pay & Book Now"}
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BusPaymentPage
+export default BusPaymentPage;
 
 
 

@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import BusPaymentPage from "../features/buses/pages/BusPaymentPage";
 import TransferHome from "../features/transfer/pages/TransferHome";
 import TransferSearchPage from "../features/transfer/pages/TransferSearchPage";
+import PaymentSuccessPage from "../features/buses/pages/PaymentSuccessPage";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("../features/home/HomePage"));
@@ -52,6 +53,7 @@ const AppRoutes = () => {
           <Route path="/busFormDetailsPage" element={<BusFormDetailsPage />} />
           <Route path="/busPaymentPage" element={<BusPaymentPage />} />
           <Route path="/busConfirmationPage" element={<BusConfirmationPage />} />
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
 
 
           {/* Transfer Rout */}/
