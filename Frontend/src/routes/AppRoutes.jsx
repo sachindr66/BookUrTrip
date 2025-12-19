@@ -6,6 +6,9 @@ import BusPaymentPage from "../features/buses/pages/BusPaymentPage";
 import TransferHome from "../features/transfer/pages/TransferHome";
 import TransferSearchPage from "../features/transfer/pages/TransferSearchPage";
 import PaymentSuccessPage from "../features/buses/pages/PaymentSuccessPage";
+import RegisterPage from "../features/auth/pages/RegisterPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import Profile from "../components/Profile";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("../features/home/HomePage"));
@@ -36,6 +39,11 @@ const AppRoutes = () => {
       <Routes>
         {/* Everything wrapped inside MainLayout */}
           {/* Home Page */}
+          
+          <Route path="/register" element={<RegisterPage/>}/>
+          <Route path="/LOGIN" element={<LoginPage/>}/>
+          <Route path="/profile" element={<Profile/>}/>
+
           <Route path="/" element={<HomePage />} />
           
           {/* Flight Routes */}

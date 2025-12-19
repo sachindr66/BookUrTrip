@@ -1,11 +1,9 @@
-import React from 'react'
+import axios from 'axios';
 
-const authApi = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
-
-export default authApi
+export const API = axios.create({
+  baseURL: 'http://localhost:5000/api/auth',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // include HTTP-only cookie on requests
+});

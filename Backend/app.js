@@ -2,28 +2,33 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import busRouter from "./routes/busRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import transferRouter from "./routes/transferRoutes.js";
 import paymentroutes from "./routes/easebuzzPaymentRoutes.js";
 import flightRouter from "./routes/flightRoutes.js"
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://book-ur-trip.vercel.app"],
+  origin: [
+    "http://localhost:5173", 
+    "http://localhost:5174", 
+    "http://127.0.0.1:5173", "https://book-ur-trip.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
 // Middleware
 app.use(express.json());
-
+app.use(cookieParser())
 // Routes
 app.get("/", (req, res) => {
   res.send("Hello from backend with CORS 🚀");
 });
-
+app.use('/api/auth', authRoutes)
 app.use('/', busRouter)
 app.use('/', transferRouter)
 app.use('/', paymentroutes)

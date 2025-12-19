@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './index.css';
 
 // Import components from new directory
 import Navbar from './components/Navbar';
 import AppRoutes from './routes/AppRoutes';
 import Footer from './components/Footer';
+import { useDispatch } from 'react-redux';
+import { fetchProfile } from './features/auth/authSlice';
 
 function App() {
+
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    // You can dispatch any global actions here if needed
+    dispatch(fetchProfile())
+  },[dispatch])
+
   return (
+
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <Navbar />

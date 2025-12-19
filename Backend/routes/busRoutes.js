@@ -1,5 +1,5 @@
 import express from 'express'
-import { authenticateBusAPI, busBlock, busSearch, getBusBoardingPoint, getBusBook, getBusCityList, getBusSeatLayout } from '../controllers/auth.js'
+import { authenticateBusAPI, busBlock, busSearch, getBusBoardingPoint, getBusBook, getBusCityList, getBusSeatLayout } from '../controllers/bus.js'
 
 const router=express.Router()
 
