@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const API = axios.create({
-  baseURL: 'http://localhost:5000/api/auth',
+  baseURL: `${import.meta.env.VITE_API_URL}/api/auth`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-  withCredentials: true, // include HTTP-only cookie on requests
+  withCredentials: true, // include HTTP-only cookie
 });

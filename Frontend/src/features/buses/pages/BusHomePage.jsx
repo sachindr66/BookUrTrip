@@ -5,12 +5,12 @@ import busImage from '../images/bus1.png';
 
 const BusHomePage = () => {
   const popularRoutes = [
-    { from: 'Bangalore', to: 'Mysore', price: '₹250', duration: '3h 30m' },
-    { from: 'Mumbai', to: 'Pune', price: '₹180', duration: '2h 45m' },
-    { from: 'Delhi', to: 'Agra', price: '₹320', duration: '4h 15m' },
-    { from: 'Chennai', to: 'Bangalore', price: '₹450', duration: '6h 20m' },
-    { from: 'Hyderabad', to: 'Bangalore', price: '₹380', duration: '5h 45m' },
-    { from: 'Kolkata', to: 'Bhubaneswar', price: '₹280', duration: '4h 30m' }
+    { from: 'Bangalore', to: 'Hyderabad', price: '₹800', duration: '3h 30m' },
+    { from: 'Mumbai', to: 'Pune', price: '₹1280', duration: '2h 45m' },
+    { from: 'Delhi', to: 'Agra', price: '₹1320', duration: '4h 15m' },
+    { from: 'Chennai', to: 'Bangalore', price: '₹950', duration: '6h 20m' },
+    { from: 'Hyderabad', to: 'Bangalore', price: '₹1080', duration: '5h 45m' },
+    { from: 'Kolkata', to: 'Bhubaneswar', price: '₹1000', duration: '4h 30m' }
   ];
 
   const features = [

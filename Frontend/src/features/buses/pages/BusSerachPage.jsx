@@ -14,8 +14,8 @@ const BusSearchPage = () => {
   );
 
   // States
-  const [fromLocation, setFromLocation] = useState({ id: null, name: "Delhi" });
-  const [toLocation, setToLocation] = useState({ id: null, name: "Jaipur" });
+  const [fromLocation, setFromLocation] = useState({ id: 8463, name: "Bangalore" });
+  const [toLocation, setToLocation] = useState({ id: 9573, name: "Hyderabad" });
   const [travelDate, setTravelDate] = useState("");
   const [selectedSeatType, setSelectedSeatType] = useState("");
   const [showACOnly, setShowACOnly] = useState(false);
