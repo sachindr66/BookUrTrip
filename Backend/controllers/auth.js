@@ -207,6 +207,44 @@ export const logoutUser = (req, res) => {
 
 
 
+export const forgotPassword = async (req, res) => {
+
+  try {
+    
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: "Email is required"
+      });
+    }
+
+    const [users] = await connection.query(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "User with this email does not exist"
+      });
+    }
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      error: "Server error"
+    });
+  }
+}
+
+
+
+
+
 // export const loginUser = async (req, res) => {
 //   try {
 //     const { email, password } = req.body;
