@@ -12,6 +12,7 @@ const BusSearchPage = () => {
   const { tokenId, cities = [], searchResults = [], status, error } = useSelector(
     (state) => state.buses
   );
+  console.log(searchResults)
 
   // States
   const [fromLocation, setFromLocation] = useState({ id: 8463, name: "Bangalore" });
@@ -435,7 +436,7 @@ const BusSearchPage = () => {
             <button
               onClick={handleSearch}
               disabled={status === "searchloading"}
-              className={`w-full bg-blue-500 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-blue-600 transition ${
+              className={`w-full btn-primary text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-blue-600 transition ${
                 status === "searchloading" ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >

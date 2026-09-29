@@ -9,6 +9,8 @@ import PaymentSuccessPage from "../features/buses/pages/PaymentSuccessPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import Profile from "../components/Profile";
+import ForgotPassword from "../features/auth/pages/ForgotPassword";
+import ResetPassword from "../features/auth/pages/RestePassword";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("../features/home/HomePage"));
@@ -43,6 +45,8 @@ const AppRoutes = () => {
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="/LOGIN" element={<LoginPage/>}/>
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/forgot-password" element={<ForgotPassword/>}/>
+          <Route path="/reset-password" element={<ResetPassword/>}/>
 
           <Route path="/" element={<HomePage />} />
           

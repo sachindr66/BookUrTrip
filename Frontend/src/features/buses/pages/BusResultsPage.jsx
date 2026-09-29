@@ -1,35 +1,37 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {  useNavigate } from "react-router-dom";
-import { 
-  FaArrowLeft, 
-  FaStar, 
-  FaChevronDown, 
-  FaChevronUp, 
-  FaCamera, 
-  FaWifi, 
-  FaMapPin, 
-  FaComment, 
-  FaFileContract 
+import { useNavigate } from "react-router-dom";
+import {
+  FaArrowLeft,
+  FaStar,
+  FaChevronDown,
+  FaChevronUp,
+  FaCamera,
+  FaWifi,
+  FaMapPin,
+  FaComment,
+  FaFileContract
 } from "react-icons/fa";
 import { clearSearchResults } from "../busesSlice";
 import BusSearchPage from "./BusSerachPage";
+import FilterPage from "./FilterPage";
+
 
 // Memoized BusCard component to prevent unnecessary re-renders
-const BusCard = memo(({ 
-  bus, 
-  index, 
-  expandedCards, 
-  toggleExpanded, 
-  formatTime, 
-  calculateDuration, 
-  getPrice, 
-  formatDate, 
-  getRandomRating, 
-  selectSeats, 
+const BusCard = memo(({
+  bus,
+  index,
+  expandedCards,
+  toggleExpanded,
+  formatTime,
+  calculateDuration,
+  getPrice,
+  formatDate,
+  getRandomRating,
+  selectSeats,
 }) => {
   const rating = getRandomRating(bus);
-  
+
   return (
 
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
@@ -46,7 +48,7 @@ const BusCard = memo(({
                 {bus.BusType || 'Standard'}
               </span>
             </div>
-            
+
             {/* Rating */}
             <div className="flex items-center space-x-2 mb-3">
               <div className="flex items-center space-x-1">
@@ -69,14 +71,14 @@ const BusCard = memo(({
                   {formatDate(bus.DepartureTime)}
                 </div>
               </div>
-              
+
               <div className="flex-1 text-center">
                 <div className="text-sm text-gray-500 mb-1">Duration</div>
                 <div className="text-lg font-semibold text-gray-700">
                   {calculateDuration(bus.DepartureTime, bus.ArrivalTime)}
                 </div>
               </div>
-              
+
               <div className="text-center">
                 <div className="text-lg font-semibold text-gray-900">
                   {formatTime(bus.ArrivalTime)}
@@ -99,10 +101,10 @@ const BusCard = memo(({
             <div className="text-sm text-gray-600 mb-4">
               {Math.floor(bus.AvailableSeats / 3)} Single Seats
             </div>
-            
+
             <button
               onClick={() => selectSeats(bus)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="btn-primary px-6 py-2"
             >
               SELECT SEATS
             </button>
@@ -304,7 +306,7 @@ const BusCard = memo(({
 const BusResultsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { searchResults = [], busSeatLayout=[], status, error ,traceId} = useSelector((state) => state.buses);
+  const { searchResults = [], busSeatLayout = [], status, error, traceId } = useSelector((state) => state.buses);
   console.log(busSeatLayout)
   const [expandedCards, setExpandedCards] = useState({});
 
@@ -312,10 +314,10 @@ const BusResultsPage = () => {
   const formatTime = useCallback((dateTimeString) => {
     if (!dateTimeString) return 'N/A';
     const date = new Date(dateTimeString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   }, []);
 
@@ -324,12 +326,12 @@ const BusResultsPage = () => {
     const dep = new Date(departureTime);
     const arr = new Date(arrivalTime);
     const diffMs = arr - dep;
-    
+
     if (diffMs < 0) return 'N/A'; // Handle overnight journeys
-    
+
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else {
@@ -342,7 +344,7 @@ const BusResultsPage = () => {
       // Use offered price if available and positive, otherwise use published price
       const offeredPrice = bus.BusPrice.OfferedPriceRoundedOff;
       const publishedPrice = bus.BusPrice.PublishedPriceRoundedOff;
-      
+
       if (offeredPrice && offeredPrice > 0) {
         return offeredPrice;
       } else if (publishedPrice && publishedPrice > 0) {
@@ -373,7 +375,7 @@ const BusResultsPage = () => {
     setExpandedCards(prev => {
       const currentKey = `${cardIndex}-${section}`;
       const isCurrentlyOpen = prev[currentKey];
-      
+
       // If clicking the same section, close it
       if (isCurrentlyOpen) {
         return {
@@ -381,20 +383,20 @@ const BusResultsPage = () => {
           [currentKey]: false
         };
       }
-      
+
       // If clicking a different section, close all others for this card and open the clicked one
       const newState = { ...prev };
-      
+
       // Close all sections for this card
       Object.keys(newState).forEach(key => {
         if (key.startsWith(`${cardIndex}-`)) {
           newState[key] = false;
         }
       });
-      
+
       // Open the clicked section
       newState[currentKey] = true;
-      
+
       return newState;
     });
   }, []);
@@ -406,7 +408,7 @@ const BusResultsPage = () => {
       // Data is already loaded from localStorage, no need to redirect
       return;
     }
-    
+
     // If no search results and not loading, redirect back to search page
     if (status === "idle" && searchResults.length === 0) {
       navigate("/buses");
@@ -415,13 +417,13 @@ const BusResultsPage = () => {
 
   const selectSeats = useCallback((bus) => {
     // Navigate to seat selection page
-      navigate("/busSeatLayoutPage", { 
-        state: { 
-          selectedBus: bus,
-          traceId: traceId
-        } 
-      });
-    }, [navigate, traceId]);
+    navigate("/busSeatLayoutPage", {
+      state: {
+        selectedBus: bus,
+        traceId: traceId
+      }
+    });
+  }, [navigate, traceId]);
 
   const handleBackToSearch = useCallback(() => {
     // Clear search results when going back to search
@@ -476,12 +478,45 @@ const BusResultsPage = () => {
         </div>
       </div>
     );
+
   }
+
+
+  // filterbus
+
+  const [filters, setFilter] = useState({
+    ac: true,
+    nonAc: false
+  })
+
+  const filterdBuses = useMemo(() => {
+
+    let result = [...searchResults]
+
+    result= result.filter((bus)=>{
+
+      const type= (bus.BusType || '').toLowerCase()
+
+      const isNonAC= type.includes('non a/c')
+      const isAC= type.includes('a/c')
+
+      if(filters.ac && !isAC) return false
+      if(filters.nonAc && !isNonAC) return false
+
+      return true
+
+    })
+
+
+    return result
+
+
+  },[searchResults, filters])
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div>
-        <BusSearchPage/>
+        <BusSearchPage />
       </div>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
@@ -492,7 +527,7 @@ const BusResultsPage = () => {
                 onClick={handleBackToSearch}
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
-              <FaArrowLeft className="h-4 w-4" />
+                <FaArrowLeft className="h-4 w-4" />
                 <span>Back to Search</span>
               </button>
               <div className="h-6 w-px bg-gray-300"></div>
@@ -510,10 +545,14 @@ const BusResultsPage = () => {
       </div>
 
       {/* Results */}
-      <div className="container-custom px-4 py-8">
+      <div className="container-custom px-4 py-8 grid grid-cols-12">
 
-        <div className="space-y-4">
-          {searchResults.map((bus, index) => (
+        <div className="col-span-2">
+          <FilterPage filters={filters} setFilters={setFilter}/>
+        </div>
+
+        <div className="space-y-4 col-span-9 gap-2">
+          {filterdBuses.map((bus, index) => (
             <BusCard
               key={`${bus.RouteId}-${index}`}
               bus={bus}
@@ -528,17 +567,18 @@ const BusResultsPage = () => {
               selectSeats={selectSeats}
             />
           ))}
-        </div>
 
-        {/* Load More Button (if needed) */}
-        {searchResults.length >= 10 && (
-          <div className="text-center mt-8">
-            <button className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
-              Load More Buses
-            </button>
-          </div>
-        )}
+          {/* Load More Button (if needed) */}
+          {searchResults.length >= 10 && (
+            <div className="text-center mt-8">
+              <button className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                Load More Buses
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
     </div>
   );
 };

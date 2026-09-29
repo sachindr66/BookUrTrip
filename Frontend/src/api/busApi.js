@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = process.env.VITE_API_URL 
 
 // Authenticate API
 export const authenticate = async () => {
