@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import busRouter from "./routes/busRoutes.js";
+import insuranceRouter from "./routes/insuranceRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import transferRouter from "./routes/transferRoutes.js";
 import paymentroutes from "./routes/easebuzzPaymentRoutes.js";
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 app.use('/api/auth', authRoutes)
 app.use('/', busRouter)
+app.use('/', insuranceRouter)
 app.use('/', transferRouter)
 app.use('/', paymentroutes)
 app.use('/api', flightRouter);
