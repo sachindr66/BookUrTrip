@@ -12,10 +12,13 @@ import Profile from "../components/Profile";
 import ForgotPassword from "../features/auth/pages/ForgotPassword";
 import ResetPassword from "../features/auth/pages/RestePassword";
 
+
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("../features/home/HomePage"));
 const FlightsPage = lazy(() => import("../features/flights/pages/FlightsPage"));
 const HotelsPage = lazy(() => import("../features/hotels/pages/HotelsPage"));
+
+//bus
 const BusHomePage = lazy(() => import("../features/buses/pages/BusHomePage"));
 const BusResultPage = lazy(() => import("../features/buses/pages/BusResultPage"));
 const BusResultsPage = lazy(() => import("../features/buses/pages/BusResultsPage"));
@@ -23,6 +26,13 @@ const BusSeatLayoutPage = lazy(() => import("../features/buses/pages/BusSeatLayo
 const BusBoardingPoint = lazy(() => import("../features/buses/pages/BusBoardingPoint"));
 const BusFormDetailsPage = lazy(() => import("../features/buses/pages/BusFormDetailsPage"));
 const BusConfirmationPage = lazy(() => import("../features/buses/pages/BusConfirmationPage"));
+
+//inusrance 
+const InsuranceHomePage = lazy(() => import("../features/insurance/pages/InsuranceHomePage"));
+const InsuranceListPage = lazy(() => import("../features/insurance/pages/InsuranceListPage"));
+const InsuranceSearchPage = lazy(() => import("../features/insurance/pages/InsuranceSearchPage"));
+
+
 
 
 // Loading component
@@ -66,6 +76,12 @@ const AppRoutes = () => {
           <Route path="/busPaymentPage" element={<BusPaymentPage />} />
           <Route path="/busConfirmationPage" element={<BusConfirmationPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
+
+          {/* Insurance Route */}/
+
+          <Route path="/insurance" element={<InsuranceHomePage/>}/>
+          <Route path="/insuranceSearch" element={<InsuranceSearchPage/>}/>
+          <Route path="/insurance-List" element={<InsuranceListPage/>}/>
 
 
           {/* Transfer Rout */}/

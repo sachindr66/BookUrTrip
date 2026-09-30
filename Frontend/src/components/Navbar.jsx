@@ -25,6 +25,7 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Buses', path: '/buses', icon: '🚌' },
+    { name: 'Insurance', path: '/insurance', icon: '🚌' },
     { name: 'Hotels', path: '/hotels', icon: '🏨' },
     { name: 'Flights', path: '/flights', icon: '✈️' },
     { name: 'Transfer', path: '/TransferHome', icon: '🚗' },
